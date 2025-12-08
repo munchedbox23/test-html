@@ -1,4 +1,4 @@
-// Глобальные переменные
+
 let questions = [];
 let currentQuestionIndex = 0;
 let userAnswers = {};
@@ -16,59 +16,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateQuestionCount();
   } catch (error) {
     console.error("Ошибка загрузки вопросов:", error);
+    alert("Ошибка загрузки вопросов. Пожалуйста, перезагрузите страницу.");
   }
 });
 
-// Обработка загрузки файла
-document.getElementById("fileInput").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-        questions = data.questions;
-        updateQuestionCount();
-        alert("Вопросы успешно загружены!");
-      } catch (error) {
-        alert("Ошибка при чтении файла. Проверьте формат JSON.");
-      }
-    };
-    reader.readAsText(file);
-  }
-});
-
-// Обновление счетчика вопросов
 function updateQuestionCount() {
   document.getElementById("questionCount").textContent = questions.length;
 }
 
-// Просмотр вопросов
-function viewQuestions() {
-  if (questions.length === 0) {
-    alert("Вопросы не загружены!");
-    return;
-  }
 
-  let preview = "Загруженные вопросы:\n\n";
-  questions.forEach((q, index) => {
-    preview += `${index + 1}. ${q.question.substring(0, 100)}...\n`;
-    preview += `   Тип: ${q.type}\n\n`;
-  });
-
-  alert(preview);
-}
-
-// Сброс вопросов
-function resetQuestions() {
-  if (confirm("Вы уверены, что хотите сбросить загруженные вопросы?")) {
-    questions = [];
-    updateQuestionCount();
-    document.getElementById("fileInput").value = "";
-  }
-}
-
-// Функция перемешивания массива (Fisher-Yates)
 function shuffleArray(array) {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -81,7 +37,7 @@ function shuffleArray(array) {
 // Начало теста
 function startTest() {
   if (questions.length === 0) {
-    alert("Пожалуйста, загрузите вопросы перед началом теста!");
+    alert("Вопросы не загружены. Пожалуйста, перезагрузите страницу.");
     return;
   }
 
@@ -288,13 +244,15 @@ function generateInputField(question, qIndex) {
   if (question.options && question.options.length > 0) {
     // Если есть варианты с пропуском
     html += '<p style="margin-bottom: 15px;">Заполните пропущенное:</p>';
+    html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">';
     question.options.forEach((option, oIndex) => {
       if (option === "___") {
-        html += `<input type="text" class="input-answer" id="q${qIndex}_input" placeholder="Введите ответ">`;
+        html += `<input type="text" class="input-answer" id="q${qIndex}_input" placeholder="Введите ответ" style="margin: 10px 0;">`;
       } else {
-        html += `<p style="margin: 5px 0;">${option}</p>`;
+        html += `<p style="margin: 10px 0; padding: 8px; background: white; border-radius: 5px;">${option}</p>`;
       }
     });
+    html += '</div>';
   } else {
     html += `<input type="text" class="input-answer" id="q${qIndex}_input" placeholder="Введите ответ">`;
   }
